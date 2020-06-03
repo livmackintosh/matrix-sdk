@@ -1,0 +1,48 @@
+name:                matrix-bot-haskell
+version:             0.0.0.1
+description:         See the README.md file
+github:              "livmackintosh/matrix-bot-haskell"
+license:             AGPL-3.0
+author:              "Olivia Mackintosh"
+maintainer:          "livvy@base.nu"
+copyright:           "Copyright © 2020 Olivia Mackintosh"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+dependencies:
+- base >= 4.7 && < 5
+- aeson
+- aeson-pretty
+- bytestring
+- optparse-applicative
+- req
+- text
+- transformers
+- unordered-containers
+
+library:
+  source-dirs: src
+
+executables:
+  matrix-bot:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - matrix-bot-haskell
+
+tests:
+  matrix-bot-haskell-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - matrix-bot-haskell
