@@ -8,21 +8,20 @@ module Matrix.API.Events where
 import Matrix.API.Config
 import Matrix.API.Types
 
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class()
 import Control.Monad.Trans.Class (lift)
-import Control.Monad.Trans.Reader (ReaderT, ask, asks, runReaderT)
-import Data.Aeson (Value)
-import Data.Aeson.Text (encodeToLazyText)
-import Data.Maybe (fromMaybe)
+import Control.Monad.Trans.Reader(asks, ReaderT)
+import Data.Aeson()
+import Data.Aeson.Text()
+import Data.Maybe()
 import Network.HTTP.Req
-import System.IO (hPutStrLn)
+import System.IO()
 
-import qualified Data.ByteString.Char8 as B
-import qualified Data.Text.Lazy.IO as I
-import qualified Data.Text.Lazy as LT
 import qualified Data.Text as T
 
-sync :: Int -> Maybe String -> Request SyncState
+type Request a = ReaderT App Req a
+
+sync :: Int -> Maybe T.Text -> Request SyncState
 sync timeout since = do
   homeserver <- asks $ configHomeserver.config
   token      <- asks $ configToken.config
@@ -34,7 +33,6 @@ sync timeout since = do
                  <> "since" `queryParam` since
   r <- lift $ req GET url NoReqBody jsonResponse options
   pure (responseBody r :: SyncState)
-
 
 send :: Int -> T.Text -> Request EventResponse
 send txId msg = do
@@ -48,5 +46,7 @@ send txId msg = do
   r <- lift $ req PUT url reqBody jsonResponse options
   return (responseBody r :: EventResponse)
 
-apiBase :: T.Text -> Url Https
+apiBase :: T.Text -> Url 'Https
 apiBase homeserver = https homeserver /: "_matrix" /: "client" /: "r0"
+
+-- vim: softtabstop=4 expandtab tabstop=4 shiftwidth=4

@@ -6,15 +6,11 @@
 
 module Matrix.API.Types where
 
-import Matrix.API.Config
-import Control.Monad.Trans.Reader (ReaderT)
 import Data.Aeson
 import GHC.Generics
-import Network.HTTP.Req
+import Network.HTTP.Req()
 import qualified Data.Text as T
 import qualified Data.HashMap.Lazy as HML
-
-type Request a = ReaderT App Req a
 
 newtype Response = Response Value deriving (Show, Generic)
 
@@ -58,7 +54,7 @@ data EventResponse = NoResponse
                    | ResponseFailure { errcode :: T.Text, error :: T.Text}
                    deriving (Show, Generic)
 
-instance ToJSON   Response 
+instance ToJSON   Response
 instance FromJSON Response
 instance ToJSON   SyncState
 instance FromJSON SyncState

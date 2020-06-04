@@ -6,52 +6,44 @@
 module Matrix.Bot (App(..), start) where
 
 import Matrix.API.Config
-import Matrix.API.Events
-import Matrix.API.Types (Request, SyncState(..), MessageEvent(..))
+import Matrix.API.Events(Request, sync)
+import Matrix.API.Types(SyncState(..))
 
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Class (lift)
-import Control.Monad.Trans.Reader (ReaderT, ask, asks, runReaderT)
-import Control.Monad.Trans.State (StateT, runStateT)
-import Data.Aeson (Value, ToJSON)
-import Data.Aeson.Text (encodeToLazyText)
+import Control.Monad.IO.Class(MonadIO, liftIO)
+import Control.Monad.Trans.Class(lift)
+import Control.Monad.Trans.Reader(ReaderT, ask, asks, runReaderT)
+import Control.Monad.Trans.State()
+import Data.Aeson()
+import Data.Aeson.Text()
 import Network.HTTP.Req
-import System.IO (Handle, hPutStrLn)
 
-import qualified Data.Text.Lazy.IO as I
 import qualified Data.Text as T
 
+type Since = T.Text
+
+runRequest :: MonadIO m => ReaderT r Req a -> r -> m a
+runRequest m a = runReq defaultHttpConfig (runReaderT m a)
 
 start :: ReaderT App IO ()
 start = do
-  a <- ask
-  h <- asks handle
-  liftIO $ hPutStrLn h "[I] Starting app"
-  liftIO $ hPutStrLn h "[I] Beginning full sync"
-  s <- runReq defaultHttpConfig (runReaderT fullSync a)
-  lift $ runReq defaultHttpConfig ( runReaderT (runPoll (next_batch s)) a )
+  asks logger >>= \l -> liftIO $
+    l "[I] Starting app" >>
+    l "[I] Beginning full sync"
+  app <- ask
+  s <- runRequest fullSync app
+  lift $ runRequest (runPoll (next_batch s)) app
 
-runPoll :: T.Text -> ReaderT App Req ()
+runPoll :: Since -> ReaderT App Req ()
 runPoll since = do
-   a <- ask
-   h <- asks handle
-   liftIO $ hPutStrLn h "[D] Beginning long-poll"
-   liftIO $ hPutStrLn h ("[D] Beginning delta sync (since: " ++ T.unpack since ++ ")")
-   s <- deltaSync $ T.unpack since
-   -- queue delta state for processing
-   let nb = next_batch s
-   runPoll nb
-   pure ()
-
+   asks logger >>= \l -> liftIO $
+      l "[D] Beginning long-poll" >>
+      l ("[D] Beginning delta sync since: " <> since)
+   deltaSync since >>= \s -> runPoll $ next_batch s
 
 fullSync :: Request SyncState
 fullSync = sync 0 Nothing
 
-deltaSync :: String -> Request SyncState
+deltaSync :: Since -> Request SyncState
 deltaSync since = sync 5000 (Just since)
-
-
-writeValue :: (ToJSON a) => a -> IO ()
-writeValue v = I.writeFile "output.json" $ encodeToLazyText v
 
 -- vim: softtabstop=4 expandtab tabstop=4 shiftwidth=4
