@@ -3,14 +3,16 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Matrix.Bot (App(..), start) where
+module Matrix.Bot(App(..), start, runPoll) where
 
 import Matrix.API.Config
 import Matrix.API.Events(Request, sync)
 import Matrix.API.Types(SyncState(..))
 
+import Control.Concurrent(forkIO, threadDelay)
+import Control.Concurrent.Chan(Chan, newChan, writeChan, readChan)
+import Control.Monad(forever)
 import Control.Monad.IO.Class(MonadIO, liftIO)
-import Control.Monad.Trans.Class(lift)
 import Control.Monad.Trans.Reader(ReaderT, ask, asks, runReaderT)
 import Control.Monad.Trans.State()
 import Data.Aeson()
@@ -21,24 +23,26 @@ import qualified Data.Text as T
 
 type Since = T.Text
 
-runRequest :: MonadIO m => ReaderT r Req a -> r -> m a
-runRequest m a = runReq defaultHttpConfig (runReaderT m a)
+runRequest :: MonadIO m => r -> ReaderT r Req a -> m a
+runRequest a m = runReq defaultHttpConfig (runReaderT m a)
 
-start :: ReaderT App IO ()
-start = do
-  asks logger >>= \l -> liftIO $
-    l "[I] Starting app" >>
-    l "[I] Beginning full sync"
-  app <- ask
-  s <- runRequest fullSync app
-  lift $ runRequest (runPoll (next_batch s)) app
+start :: App -> IO ()
+start a = do
+    q <- newChan
+    _ <- forkIO $ runRequest a fullSync >>= \s -> runRequest a $ runPoll q (next_batch s)
+    runReaderT (runProcess q) a
 
-runPoll :: Since -> ReaderT App Req ()
-runPoll since = do
-   asks logger >>= \l -> liftIO $
-      l "[D] Beginning long-poll" >>
-      l ("[D] Beginning delta sync since: " <> since)
-   deltaSync since >>= \s -> runPoll $ next_batch s
+runPoll :: MonadIO m => Chan SyncState -> T.Text -> ReaderT App m ()
+runPoll q since = do
+    asks logger >>= \l -> liftIO $
+        l ("[D][poll]: Delta sync since: " <> since)
+    a <- ask
+    runRequest a $ deltaSync since >>= \s -> liftIO (writeChan q s) >> runPoll q (next_batch s)
+
+runProcess :: MonadIO m => Chan SyncState -> ReaderT App m ()
+runProcess q = asks logger >>= \l -> liftIO $ forever $ do
+    s <- readChan q
+    liftIO $ l ("[D][process]: Processing state" <> T.pack (show s))
 
 fullSync :: Request SyncState
 fullSync = sync 0 Nothing

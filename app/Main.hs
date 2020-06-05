@@ -7,7 +7,6 @@ module Main (main) where
 import Matrix.API.Config (Config(..))
 import Matrix.Bot (App(..), start)
 
-import Control.Monad.Trans.Reader (runReaderT)
 import Network.HTTP.Req()
 import Options.Applicative (Parser, (<**>))
 
@@ -35,7 +34,7 @@ optParser = Config
             <> O.metavar "ROOM_ID" )
 
 app :: Config -> IO ()
-app c = runReaderT start $ App c print
+app c = start $ App c print
 
 main :: IO ()
 main = app =<< O.execParser opts
