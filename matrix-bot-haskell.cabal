@@ -35,7 +35,6 @@ library
       src
   build-depends:
       aeson
-    , aeson-pretty
     , base >=4.7 && <5
     , bytestring
     , optparse-applicative
@@ -54,7 +53,6 @@ executable matrix-bot
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
-    , aeson-pretty
     , base >=4.7 && <5
     , bytestring
     , matrix-bot-haskell
@@ -75,7 +73,6 @@ test-suite matrix-bot-haskell-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
-    , aeson-pretty
     , base >=4.7 && <5
     , bytestring
     , matrix-bot-haskell

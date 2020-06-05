@@ -22,7 +22,7 @@ data SyncState = SyncState
   } deriving (Show, Generic)
 
 newtype Rooms = Rooms
-  { join :: HML.HashMap T.Text JoinedRoom 
+  { join :: HML.HashMap T.Text JoinedRoom
   } deriving (Show, Generic)
 
 newtype JoinedRoom = JoinedRoom

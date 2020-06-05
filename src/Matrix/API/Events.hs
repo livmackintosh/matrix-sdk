@@ -34,14 +34,14 @@ sync timeout since = do
   r <- lift $ req GET url NoReqBody jsonResponse options
   pure (responseBody r :: SyncState)
 
-send :: Int -> T.Text -> Request EventResponse
+send :: T.Text -> T.Text -> Request EventResponse
 send txId msg = do
   homeserver <- asks $ configHomeserver.config
   token      <- asks $ configToken.config
   roomId     <- asks $ configRoomId.config
   let url = apiBase homeserver /: "rooms" /: roomId /: "send" /: "m.room.message" /: txId'
       reqBody = ReqBodyJson $ MessageEvent "m.text" msg
-      txId' = T.pack.show $ txId
+      txId' = txId
       options = "access_token" =: token
   r <- lift $ req PUT url reqBody jsonResponse options
   return (responseBody r :: EventResponse)
