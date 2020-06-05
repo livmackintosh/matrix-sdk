@@ -8,13 +8,6 @@ features that one might normally expect from such a project.
 There are two parts to this project: the _bot_ and the (HTTP) _API_ client for
 [matrix]. Both components are being developed simultaniously.
 
-What currently works:
-  * Initial and delta sync with partial parsing of response
-  * Long polling loop to wait for new message events
-
-**You can not yet fire this project yourself and expect something useful to happen.
-  This will happen very soon though so feel free to watch this repository 👀.**
-
 ## Design
 
 * Uses ReaderT to provide runtime configuration and dependencies thoughout the API.
