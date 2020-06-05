@@ -47,10 +47,10 @@ runProcess q = ask >>= \a -> liftIO $ forever $ do
       r = (configRoomId.config) a
   readChan q >>= \s ->
     liftIO $ l ("[D][process]: Processing state" <> T.pack (show s)) >>
-    mapM_ (runRequest a) (processState s r)
+    mapM_ (runRequest a) (processState (configAccountName $ config a) s r)
 
-processState :: SyncState -> T.Text -> [Request EventResponse]
-processState s r = concat (fmap makeResponse.sieveMsgEvents <$> getRoomEvents s r)
+processState :: T.Text -> SyncState -> T.Text -> [Request EventResponse]
+processState u s r = concat (fmap makeResponse . sieveMsgEvents u <$> getRoomEvents s r)
 
 makeResponse :: RoomEvent -> Request EventResponse
 makeResponse r = send (event_id r) "Hi!"
@@ -58,8 +58,10 @@ makeResponse r = send (event_id r) "Hi!"
 getRoomEvents :: SyncState -> T.Text -> Maybe [RoomEvent]
 getRoomEvents s rid = fmap (events.timeline) (HML.lookup rid $ (join.rooms) s)
 
-sieveMsgEvents :: [RoomEvent] -> [RoomEvent]
-sieveMsgEvents = filter (\r -> event_type r == "m.room.message")
+sieveMsgEvents :: T.Text -> [RoomEvent] -> [RoomEvent]
+sieveMsgEvents botUser = filter $ \r ->
+    event_type r == "m.room.message"
+ && sender r     /= botUser
 
 fullSync :: Request SyncState
 fullSync = sync 0 Nothing

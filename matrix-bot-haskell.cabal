@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           matrix-bot-haskell
-version:        0.0.0.1
+version:        0.0.1.0
 description:    See the README.md file
 homepage:       https://github.com/livmackintosh/matrix-bot-haskell#readme
 bug-reports:    https://github.com/livmackintosh/matrix-bot-haskell/issues

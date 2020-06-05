@@ -1,5 +1,5 @@
 name:                matrix-bot-haskell
-version:             0.0.0.1
+version:             0.0.1.0
 description:         See the README.md file
 github:              "livmackintosh/matrix-bot-haskell"
 license:             AGPL-3.0
