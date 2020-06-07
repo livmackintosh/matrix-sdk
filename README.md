@@ -1,4 +1,5 @@
 # Matrix Bot Haskell
+![Haskell Matrix](docs/images/haskell-matrix.svg?raw=true)
 
 Another 🤖 for the [[matrix]](https://matrix.org) protocol written in Haskell.
 
