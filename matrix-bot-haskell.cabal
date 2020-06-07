@@ -29,6 +29,8 @@ library
       Matrix.API.Events
       Matrix.API.Types
       Matrix.Bot
+      Matrix.Olm.C
+      Matrix.Olm.Lib
   other-modules:
       Paths_matrix_bot_haskell
   hs-source-dirs:

@@ -6,14 +6,15 @@ module Main (main) where
 
 import Matrix.API.Config (Config(..))
 import Matrix.Bot (App(..), start)
+import Matrix.Olm.Lib
 
 import Network.HTTP.Req()
 import Options.Applicative (Parser, (<**>))
 
 import qualified Options.Applicative as O
 
-optParser :: Parser Config
-optParser = Config
+configParser :: Parser Config
+configParser = Config
          <$> O.strOption
              ( O.long "homeserver"
             <> O.help "Homeserver to connect to"
@@ -37,9 +38,11 @@ app :: Config -> IO ()
 app c = start $ App c print
 
 main :: IO ()
-main = app =<< O.execParser opts
-  where
-    opts = O.info (optParser <**> O.helper)
-      ( O.fullDesc
-     <> O.progDesc "Starts the chatbot as USERNAME"
-     <> O.header "matrix-bot - A [matrix] chatbot written in Haskell" )
+main = do
+  olmVer <- getOlmVersion
+  o <- O.execParser $ O.info (configParser <**> O.helper)
+        ( O.fullDesc
+       <> O.progDesc "Starts the chatbot as USERNAME"
+       <> O.header "matrix-bot - A [matrix] chatbot written in Haskell"
+       <> O.footer ("Olm version: " <> show olmVer))
+  app o
