@@ -9,6 +9,20 @@ features that one might normally expect from such a project.
 There are two parts to this project: the _bot_ and the (HTTP) _API_ client for
 [matrix]. Both components are being developed simultaniously.
 
+## Project Status
+
+Early Alpha.
+
+## Building
+
+The Haskell Stack tool is the current build method. You can install this with your package manager of choice or, you can install [Haskell Platform](https://haskell.org/platform).
+
+```
+stack build
+stack install
+```
+This will install to ~/.local/bin but you can put the binary wherever you like (e.g. /usr/local/bin)
+
 ## Design
 
 * Uses ReaderT to provide runtime configuration and dependencies thoughout the API.
