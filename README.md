@@ -13,12 +13,16 @@ There are two parts to this project: the _bot_ and the (HTTP) _API_ client for
 
 Early Alpha.
 
+## Dependencies
+
+* [libolm](https://gitlab.matrix.org/matrix-org/olm)
+
 ## Building
 
 The Haskell Stack tool is the current build method. You can install this with your package manager of choice or, you can install [Haskell Platform](https://haskell.org/platform).
 
 ```
-stack build
+stack build --ghc-options -lolm
 stack install
 ```
 This will install to ~/.local/bin but you can put the binary wherever you like (e.g. /usr/local/bin)
