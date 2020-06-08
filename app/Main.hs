@@ -7,6 +7,7 @@ module Main (main) where
 import Matrix.API.Config (Config(..))
 import Matrix.Bot (App(..), start)
 import Matrix.Olm.Lib
+import Matrix.Olm.C
 
 import Network.HTTP.Req()
 import Options.Applicative (Parser, (<**>))
@@ -39,7 +40,7 @@ app c = start $ App c print
 
 main :: IO ()
 main = do
-  olmVer <- getOlmVersion
+  olmVer <- olmVersion
   o <- O.execParser $ O.info (configParser <**> O.helper)
         ( O.fullDesc
        <> O.progDesc "Starts the chatbot as USERNAME"
