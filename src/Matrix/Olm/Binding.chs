@@ -27,11 +27,11 @@ olmSession = {#call olm_session #}
 olmUtility :: Ptr () -> IO UtilityPtr
 olmUtility = {#call olm_utility #}
 
-olmAccountSize :: IO CULong
-olmAccountSize = {#call olm_account_size#}
+olmAccountSize :: CULong
+olmAccountSize = {#call pure olm_account_size#}
 
-olmSessionSize:: IO CULong
-olmSessionSize= {#call olm_session_size#}
+olmSessionSize:: CULong
+olmSessionSize= {#call pure olm_session_size#}
 
-olmUtilitySize :: IO CULong
-olmUtilitySize = {#call olm_utility_size #}
+olmUtilitySize :: CULong
+olmUtilitySize = {#call pure olm_utility_size #}
