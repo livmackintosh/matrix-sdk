@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.1.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 
@@ -29,7 +29,7 @@ library
       Matrix.API.Events
       Matrix.API.Types
       Matrix.Bot
-      Matrix.Olm.C
+      Matrix.Olm.Binding
       Matrix.Olm.Lib
   other-modules:
       Paths_matrix_bot_haskell
@@ -53,6 +53,8 @@ executable matrix-bot
   hs-source-dirs:
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  extra-libraries:
+      olm
   build-depends:
       aeson
     , base >=4.7 && <5

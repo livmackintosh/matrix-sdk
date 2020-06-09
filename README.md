@@ -22,7 +22,7 @@ Early Alpha.
 The Haskell Stack tool is the current build method. You can install this with your package manager of choice or, you can install [Haskell Platform](https://haskell.org/platform).
 
 ```
-stack build --ghc-options -lolm
+stack build
 stack install
 ```
 This will install to ~/.local/bin but you can put the binary wherever you like (e.g. /usr/local/bin)

@@ -7,7 +7,6 @@ module Main (main) where
 import Matrix.API.Config (Config(..))
 import Matrix.Bot (App(..), start)
 import Matrix.Olm.Lib
-import Matrix.Olm.C
 
 import Network.HTTP.Req()
 import Options.Applicative (Parser, (<**>))

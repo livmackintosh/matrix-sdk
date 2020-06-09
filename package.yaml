@@ -34,6 +34,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - matrix-bot-haskell
+    extra-libraries: olm
 
 tests:
   matrix-bot-haskell-test:
