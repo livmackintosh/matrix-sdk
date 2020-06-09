@@ -58,6 +58,15 @@ identKeys a = allocaBytes (fromEnum size) $ \p -> do
   pure $ decodeStrict $ B.take (fromEnum size) $ B.pack iks
   where size = {#call pure olm_account_identity_keys_length#} a
 
+
+oneTimeKeys :: AccountPtr -> IO (Maybe Value)
+oneTimeKeys a = allocaBytes (fromEnum size) $ \p -> do
+  {#call olm_account_one_time_keys#} a p (size)
+  otks <- peekCString (castPtr p)
+  pure $ decodeStrict $ B.take (fromEnum size) $ B.pack otks
+  where size = {#call pure olm_account_one_time_keys_length#} a
+
+
 --accountLastError :: AccountPtr -> IO String
 --accountLastError ap = do
 --  ptrChar <- {#call olm_account_last_error#} ap
