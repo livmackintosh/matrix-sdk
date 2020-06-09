@@ -30,7 +30,7 @@ library
       Matrix.API.Types
       Matrix.Bot
       Matrix.Olm.Binding
-      Matrix.Olm.Lib
+      Matrix.Olm.Types
   other-modules:
       Paths_matrix_bot_haskell
   hs-source-dirs:
