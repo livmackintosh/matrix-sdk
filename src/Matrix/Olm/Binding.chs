@@ -53,19 +53,31 @@ clearAccount = {#call olm_clear_account #}
 
 identKeys :: AccountPtr -> IO (Maybe IdentityKeys)
 identKeys a = allocaBytes (fromEnum size) $ \p -> do
-  {#call olm_account_identity_keys#} a p (size)
+  writSize <- {#call olm_account_identity_keys#} a p (size)
   iks <- peekCString (castPtr p)
-  pure $ decodeStrict $ B.take (fromEnum size) $ B.pack iks
+  pure $ decodeStrict $ B.take (fromEnum writSize) $ B.pack iks
   where size = {#call pure olm_account_identity_keys_length#} a
 
 
-oneTimeKeys :: AccountPtr -> IO (Maybe Value)
+oneTimeKeys :: AccountPtr -> IO (Maybe OneTimeKeys)
 oneTimeKeys a = allocaBytes (fromEnum size) $ \p -> do
-  {#call olm_account_one_time_keys#} a p (size)
+  writSize <- {#call olm_account_one_time_keys#} a p (size)
   otks <- peekCString (castPtr p)
-  pure $ decodeStrict $ B.take (fromEnum size) $ B.pack otks
+  pure $ decodeStrict $ B.take (fromEnum writSize) $ B.pack otks
   where size = {#call pure olm_account_one_time_keys_length#} a
 
+
+genOneTimeKeys :: Int -> AccountPtr -> IO CULong
+genOneTimeKeys n a = allocaBytes (fromEnum size) $ \p -> do
+  -- TODO: Write random data to p
+  {#call olm_account_generate_one_time_keys #} a nK p size
+  where
+  nK = toEnum n :: CULong
+  size = {#call pure olm_account_generate_one_time_keys_random_length#} a nK
+
+
+markKeysAsPublished :: AccountPtr -> IO CULong
+markKeysAsPublished = {#call olm_account_mark_keys_as_published #}
 
 --accountLastError :: AccountPtr -> IO String
 --accountLastError ap = do
