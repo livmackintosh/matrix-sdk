@@ -10,11 +10,13 @@ import Foreign
 import Foreign.C.String
 import Foreign.C.Types
 import Foreign.Ptr
-import GHC.Generics (Generic)
+import GHC.Generics(Generic)
 
 import qualified Data.ByteString.Char8 as B
+import qualified Data.Text as T
 
 #include <olm/olm.h>
+
 
 -- use ForeignPtr with finalizer for each of these
 -- primary opaque pointer types
@@ -44,14 +46,11 @@ newAccount = do
   -- accessible e.g. ForeignPtr
   acctPtr <- mallocBytes (fromEnum {#call pure olm_account_size#}) >>= \p ->
     {#call olm_account#} p
-
   randSize <- {#call olm_create_account_random_length#} acctPtr
-
   allocaBytes (fromEnum randSize) $ \rndPtr -> do
     getSystemDRG >>= \g ->
       fst $ withRandomBytes g (fromEnum randSize) (copyBSToPtr rndPtr)
     {#call olm_create_account#} acctPtr rndPtr randSize
-
   pure acctPtr
 
 
@@ -87,6 +86,18 @@ genOneTimeKeys nK a = allocaBytes (fromEnum size) $ \rndPtr -> do
 
 markKeysAsPublished :: AccountPtr -> IO CULong
 markKeysAsPublished = {#call olm_account_mark_keys_as_published #}
+
+
+signMessage :: AccountPtr -> String -> IO String
+signMessage a m = allocaBytes (sM + sS) $ \p -> do
+  let pM = p
+      pS = plusPtr p sM
+  withCString m $ \m' -> poke pM m'
+  {#call olm_account_sign #} a (castPtr pM) (toEnum sM) (castPtr pS) (toEnum sS)
+  peekCString (castPtr pS)
+  where
+  sM = length m
+  sS = fromEnum $ {#call pure olm_account_signature_length#} a
 
 
 copyBSToPtr :: Ptr a -> B.ByteString -> IO ()
