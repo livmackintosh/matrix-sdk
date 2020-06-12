@@ -39,6 +39,8 @@ library
       aeson
     , base >=4.7 && <5
     , bytestring
+    , cryptonite
+    , memory
     , optparse-applicative
     , req
     , text
@@ -59,7 +61,9 @@ executable matrix-bot
       aeson
     , base >=4.7 && <5
     , bytestring
+    , cryptonite
     , matrix-bot-haskell
+    , memory
     , optparse-applicative
     , req
     , text
@@ -79,7 +83,9 @@ test-suite matrix-bot-haskell-test
       aeson
     , base >=4.7 && <5
     , bytestring
+    , cryptonite
     , matrix-bot-haskell
+    , memory
     , optparse-applicative
     , req
     , text

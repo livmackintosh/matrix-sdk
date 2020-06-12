@@ -3,7 +3,9 @@ module Matrix.Olm.Binding where
 
 import Matrix.Olm.Types
 
+import Crypto.Random(getSystemDRG, withRandomBytes)
 import Data.Aeson
+import Data.ByteArray(copyByteArrayToPtr)
 import Foreign
 import Foreign.C.String
 import Foreign.C.Types
@@ -14,7 +16,8 @@ import qualified Data.ByteString.Char8 as B
 
 #include <olm/olm.h>
 
-
+-- use ForeignPtr with finalizer for each of these
+-- primary opaque pointer types
 data Account
 {#pointer *OlmAccount as AccountPtr -> Account #}
 
@@ -37,17 +40,22 @@ olmGetLibraryVersion =
 
 newAccount :: IO AccountPtr
 newAccount = do
-  ptrA <- mallocBytes (fromEnum {#call pure olm_account_size#})
-  acctPtr <- {#call olm_account#} ptrA
+  -- TODO: add some way of freeing this memory automatically when ptr not
+  -- accessible e.g. ForeignPtr
+  acctPtr <- mallocBytes (fromEnum {#call pure olm_account_size#}) >>= \p ->
+    {#call olm_account#} p
+
   randSize <- {#call olm_create_account_random_length#} acctPtr
-  ptrB <- mallocBytes (fromEnum randSize)
-  -- TODO: Write random data of randSize at ptrB.
-  {#call olm_create_account#} acctPtr ptrB randSize
+
+  allocaBytes (fromEnum randSize) $ \rndPtr -> do
+    getSystemDRG >>= \g ->
+      fst $ withRandomBytes g (fromEnum randSize) (copyBSToPtr rndPtr)
+    {#call olm_create_account#} acctPtr rndPtr randSize
+
   pure acctPtr
 
 
 clearAccount :: AccountPtr -> IO CULong
--- TODO: Incoporate this into account finalizer
 clearAccount = {#call olm_clear_account #}
 
 
@@ -64,58 +72,22 @@ oneTimeKeys a = allocaBytes (fromEnum size) $ \p -> do
   writSize <- {#call olm_account_one_time_keys#} a p (size)
   otks <- peekCString (castPtr p)
   pure $ decodeStrict $ B.take (fromEnum writSize) $ B.pack otks
-  where size = {#call pure olm_account_one_time_keys_length#} a
-
-
-genOneTimeKeys :: Int -> AccountPtr -> IO CULong
-genOneTimeKeys n a = allocaBytes (fromEnum size) $ \p -> do
-  -- TODO: Write random data to p
-  {#call olm_account_generate_one_time_keys #} a nK p size
   where
-  nK = toEnum n :: CULong
+  size = {#call pure olm_account_one_time_keys_length#} a
+
+
+genOneTimeKeys :: CULong -> AccountPtr -> IO CULong
+genOneTimeKeys nK a = allocaBytes (fromEnum size) $ \rndPtr -> do
+  getSystemDRG >>= \g ->
+    fst $ withRandomBytes g (fromEnum size) (copyBSToPtr rndPtr)
+  {#call olm_account_generate_one_time_keys #} a nK rndPtr size
+  where
   size = {#call pure olm_account_generate_one_time_keys_random_length#} a nK
 
 
 markKeysAsPublished :: AccountPtr -> IO CULong
 markKeysAsPublished = {#call olm_account_mark_keys_as_published #}
 
---accountLastError :: AccountPtr -> IO String
---accountLastError ap = do
---  ptrChar <- {#call olm_account_last_error#} ap
---  a <- peek ptrChar
---  pure (show a)
 
---olmAccount :: Ptr () -> IO AccountPtr
---olmAccount = {#call olm_account #}
---
---olmSession :: Ptr () -> IO SessionPtr
---olmSession = {#call olm_session #}
---
---olmUtility :: Ptr () -> IO UtilityPtr
---olmUtility = {#call olm_utility #}
---
---olmAccountLastError :: AccountPtr -> IO (Ptr CChar)
---olmAccountLastError = {#call olm_account_last_error #}
---
---olmAccountSize :: CULong
---olmAccountSize = {#call pure olm_account_size#}
---
---olmSessionSize :: CULong
---olmSessionSize = {#call pure olm_session_size#}
---
---olmUtilitySize :: CULong
---olmUtilitySize = {#call pure olm_utility_size #}
---
---
---olmClearSession :: SessionPtr -> IO CULong
---olmClearSession = {#call olm_clear_session #}
---
---olmClearUtility :: UtilityPtr -> IO CULong
---olmClearUtility = {#call olm_clear_utility #}
---
---olmCreateAccountRandomLength :: AccountPtr -> IO CULong
---olmCreateAccountRandomLength = {#call olm_create_account_random_length #}
---
---olmCreateAccount :: AccountPtr -> Ptr () -> CULong -> IO CULong
---olmCreateAccount = {#call olm_create_account #}
---
+copyBSToPtr :: Ptr a -> B.ByteString -> IO ()
+copyBSToPtr = flip copyByteArrayToPtr
