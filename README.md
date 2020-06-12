@@ -1,13 +1,14 @@
-# Matrix Bot Haskell
+# Matrix SDK Haskell
 ![Haskell Matrix](docs/images/haskell-matrix.svg?raw=true)
 
-Another 🤖 for the [[matrix]](https://matrix.org) protocol written in Haskell.
+Another SDK for the [[matrix]](https://matrix.org) protocol written in Haskell.
 
 This is early alpha software and as such does not implement the full suite of
 features that one might normally expect from such a project.
 
-There are two parts to this project: the _bot_ and the (HTTP) _API_ client for
-[matrix]. Both components are being developed simultaniously.
+There are two parts to this project: a _bot_ and the (HTTP) _API_ client for
+[matrix]. Both components are being developed simultaniously but probably will
+be separated in the future
 
 ## Project Status
 
@@ -19,7 +20,8 @@ Early Alpha.
 
 ## Building
 
-The Haskell Stack tool is the current build method. You can install this with your package manager of choice or, you can install [Haskell Platform](https://haskell.org/platform).
+The Haskell Stack tool is the current build method. You can install this with your
+package manager of choice or, you can install [Haskell Platform](https://haskell.org/platform).
 
 ```
 stack build

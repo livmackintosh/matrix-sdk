@@ -1,7 +1,7 @@
-name:                matrix-bot-haskell
+name:                matrix-sdk
 version:             0.0.1.0
 description:         See the README.md file
-github:              "livmackintosh/matrix-bot-haskell"
+github:              "livmackintosh/matrix-sdk-haskell"
 license:             AGPL-3.0
 author:              "Olivia Mackintosh"
 maintainer:          "livvy@base.nu"
@@ -35,11 +35,11 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - matrix-bot-haskell
+    - matrix-sdk
     extra-libraries: olm
 
 tests:
-  matrix-bot-haskell-test:
+  matrix-bot-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -47,4 +47,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - matrix-bot-haskell
+    - matrix-sdk
