@@ -11,7 +11,6 @@ synopsis:            SDK for the [matrix] protocol
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 dependencies:
 - base                 >= 4.7     && < 5
