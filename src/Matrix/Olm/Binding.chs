@@ -58,8 +58,8 @@ clearAccount = {#call olm_clear_account #}
 identKeys :: AccountPtr -> IO (Maybe IdentityKeys)
 identKeys a = allocaBytes (fromEnum size) $ \p -> do
   writSize <- {#call olm_account_identity_keys#} a p (size)
-  iks <- B.packCString =<< peek (castPtr p)
-  pure $ decodeStrict $ B.take (fromEnum writSize) $ iks
+  iks <- peekCString (castPtr p)
+  pure $ decodeStrict $ B.take (fromEnum writSize) $ B.pack iks
   where size = {#call pure olm_account_identity_keys_length#} a
 
 
