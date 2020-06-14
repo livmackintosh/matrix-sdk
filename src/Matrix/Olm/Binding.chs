@@ -3,7 +3,13 @@ module Matrix.Olm.Binding where
 
 import Matrix.Olm.Types
 
-import Crypto.Random(getSystemDRG, withRandomBytes)
+import Control.Monad.Random(RandT)
+import Control.Monad.IO.Class(MonadIO)
+import Crypto.Random
+ ( MonadRandom
+ , getSystemDRG
+ , withRandomBytes
+ , getRandomBytes)
 import Data.Aeson
 import Data.ByteArray(copyByteArrayToPtr)
 import Foreign
@@ -61,8 +67,8 @@ clearAccount = {#call olm_clear_account #}
 identKeys :: AccountPtr -> IO (Maybe IdentityKeys)
 identKeys a = allocaBytes (fromEnum size) $ \p -> do
   writSize <- {#call olm_account_identity_keys#} a p (size)
-  iks <- peekCString (castPtr p)
-  pure $ decodeStrict $ B.take (fromEnum writSize) $ B.pack iks
+  iks <- B.packCString =<< peek (castPtr p)
+  pure $ decodeStrict $ B.take (fromEnum writSize) $ iks
   where size = {#call pure olm_account_identity_keys_length#} a
 
 
@@ -75,10 +81,10 @@ oneTimeKeys a = allocaBytes (fromEnum size) $ \p -> do
   size = {#call pure olm_account_one_time_keys_length#} a
 
 
-genOneTimeKeys :: CULong -> AccountPtr -> IO CULong
-genOneTimeKeys nK a = allocaBytes (fromEnum size) $ \rndPtr -> do
-  getSystemDRG >>= \g ->
-    fst $ withRandomBytes g (fromEnum size) (copyBSToPtr rndPtr)
+type RandomData = B.ByteString
+genOneTimeKeys :: RandomData -> CULong -> AccountPtr -> IO CULong
+genOneTimeKeys r nK a = allocaBytes (fromEnum size) $ \rndPtr -> do
+  withCString (B.unpack r) $ \r' -> poke (castPtr rndPtr) r'
   {#call olm_account_generate_one_time_keys #} a nK rndPtr size
   where
   size = {#call pure olm_account_generate_one_time_keys_random_length#} a nK
@@ -102,3 +108,6 @@ signMessage a m = allocaBytes (sM + sS) $ \p -> do
 
 copyBSToPtr :: Ptr a -> B.ByteString -> IO ()
 copyBSToPtr = flip copyByteArrayToPtr
+
+generateRandom :: MonadRandom m => Int -> m B.ByteString
+generateRandom s = getRandomBytes s

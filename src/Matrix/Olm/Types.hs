@@ -6,6 +6,7 @@ import Data.Aeson(ToJSON,FromJSON)
 import Foreign.C.Types
 import GHC.Generics(Generic)
 
+import qualified Data.ByteString as B
 import qualified Data.HashMap.Lazy as H
 import qualified Data.Text as T
 
