@@ -1,3 +1,3 @@
 cradle:
   stack:
-    component: "matrix-bot-haskell:lib"
+    component: "matrix-sdk:lib"
