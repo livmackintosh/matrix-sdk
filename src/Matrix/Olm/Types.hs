@@ -4,7 +4,6 @@
 module Matrix.Olm.Types where
 
 import Data.Aeson (FromJSON, ToJSON)
-import qualified Data.ByteString as B
 import qualified Data.HashMap.Lazy as H
 import qualified Data.Text as T
 import Foreign.C.Types
