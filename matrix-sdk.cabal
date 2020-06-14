@@ -38,7 +38,8 @@ library
   hs-source-dirs:
       src
   build-depends:
-      aeson >=1.5.1 && <1.6
+      MonadRandom >=0.5.1 && <0.6
+    , aeson >=1.5.1 && <1.6
     , base >=4.7 && <5
     , bytestring >=0.10.10 && <0.11
     , cryptonite >=0.26 && <0.27
@@ -60,7 +61,8 @@ executable matrix-bot
   extra-libraries:
       olm
   build-depends:
-      aeson >=1.5.1 && <1.6
+      MonadRandom >=0.5.1 && <0.6
+    , aeson >=1.5.1 && <1.6
     , base >=4.7 && <5
     , bytestring >=0.10.10 && <0.11
     , cryptonite >=0.26 && <0.27
@@ -82,7 +84,8 @@ test-suite matrix-bot-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson >=1.5.1 && <1.6
+      MonadRandom >=0.5.1 && <0.6
+    , aeson >=1.5.1 && <1.6
     , base >=4.7 && <5
     , bytestring >=0.10.10 && <0.11
     , cryptonite >=0.26 && <0.27
