@@ -3,23 +3,14 @@ module Matrix.Olm.Binding where
 
 import Matrix.Olm.Types
 
-import Control.Monad.Random(RandT)
-import Control.Monad.IO.Class(MonadIO)
-import Crypto.Random
- ( MonadRandom
- , getSystemDRG
- , withRandomBytes
- , getRandomBytes)
+import Crypto.Random(MonadRandom, getSystemDRG, withRandomBytes, getRandomBytes)
 import Data.Aeson
 import Data.ByteArray(copyByteArrayToPtr)
 import Foreign
 import Foreign.C.String
 import Foreign.C.Types
-import Foreign.Ptr
-import GHC.Generics(Generic)
 
 import qualified Data.ByteString.Char8 as B
-import qualified Data.Text as T
 
 #include <olm/olm.h>
 
