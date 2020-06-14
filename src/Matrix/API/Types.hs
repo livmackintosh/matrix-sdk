@@ -22,9 +22,13 @@ data SyncState = SyncState
   deriving (Show, Generic)
 
 instance Semigroup SyncState where
-  a <> b = SyncState (next_batch b) (rooms a <> rooms b)
+  a <> b = SyncState nb (rooms a <> rooms b)
+    where
+      -- ugly hack to satisfy monad identity :(
+      nb = if T.null $ next_batch b then next_batch a else next_batch b
 
 instance Monoid SyncState where
+  -- use of empty string is poor choice
   mempty = SyncState "" (Rooms HML.empty)
 
 newtype Rooms = Rooms
