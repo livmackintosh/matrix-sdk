@@ -33,6 +33,8 @@ This will install to ~/.local/bin but you can put the binary wherever you like (
 
 * Uses ReaderT to provide runtime configuration and dependencies thoughout the API.
 
+* Monoid instance for State allowing for type-safe immutable appends of state updates
+
 * The client API and the bot framework are separate to allow for these to to be
     re-used independently and to allow for custom bots using this project.
 
