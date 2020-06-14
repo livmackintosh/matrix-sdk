@@ -14,7 +14,7 @@ bug-reports:    https://github.com/livmackintosh/matrix-sdk-haskell/issues
 author:         Olivia Mackintosh
 maintainer:     livvy@base.nu
 copyright:      Copyright © 2020 Olivia Mackintosh
-license:        AGPL-3
+license:        LGPL-3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:

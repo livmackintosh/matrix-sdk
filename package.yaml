@@ -2,7 +2,7 @@ name:                matrix-sdk
 version:             0.0.1.0
 description:         See the README.md file
 github:              "livmackintosh/matrix-sdk-haskell"
-license:             AGPL-3
+license:             LGPL-3
 author:              "Olivia Mackintosh"
 maintainer:          "livvy@base.nu"
 copyright:           "Copyright © 2020 Olivia Mackintosh"
